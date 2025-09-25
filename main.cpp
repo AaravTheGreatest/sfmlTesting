@@ -1,18 +1,32 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+bool isMoving() {
+  return (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W));
+}
 int main() {
   sf::RenderWindow window(sf::VideoMode({800, 600}), "Zandris");
   sf::Texture placeholder ("gradientPlaceholder.png", false, sf::IntRect({1, 1}, {750, 550}));
   sf::Texture texture("image.png", false, sf::IntRect({1, 1}, {40, 32}));
   sf::Sprite sprite(texture);
   sf::Sprite heart(placeholder);
-  float normalSpeed = 1.f, sprintSpeed = 5.f, speed = 1.f;
+  float normalSpeed = 1.f, sprintSpeed = 5.f, speed = 1.f, stamina = 10.f;
   while (window.isOpen()) {
+    bool isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift);
+    // speed = isSprinting ? sprintSpeed : normalSpeed;
+    if (!isSprinting && stamina < 10) stamina += 0.0001f;
     while (const std::optional event = window.pollEvent()) {
+      if (isSprinting && isMoving()) stamina -= 0.05f;
       if (event->is<sf::Event::Closed>()) window.close();
       else if (const auto* key = event -> getIf<sf::Event::KeyPressed>()) {
-        speed = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) ? sprintSpeed : normalSpeed;
+        speed = isSprinting ? sprintSpeed : normalSpeed;
+        stamina = (speed == sprintSpeed) ? (stamina - 0.1) : (stamina + 0.1);
+        if (stamina > 10.f) stamina = 10.f;
+        if (stamina <= 0) {
+          speed = normalSpeed;
+          stamina = 0;
+        }
+        std::cout << stamina << " stamina left. " << speed << " is the current speed.\n";
         if (key -> scancode == sf::Keyboard::Scancode::Escape) window.close();
       }
       else if (event -> is<sf::Event::FocusLost>())
@@ -30,7 +44,7 @@ int main() {
         direction.y /= length;
       }
       sprite.move(direction * speed);
-      heart.setPosition({780.f, 580.f});
+      heart.setPosition({780.f, 550.f});
       window.clear(sf::Color::Black);
       window.draw(heart);
       window.draw(sprite);
