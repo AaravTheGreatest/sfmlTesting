@@ -14,7 +14,8 @@ int main() {
   while (window.isOpen()) {
     bool isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift);
     // speed = isSprinting ? sprintSpeed : normalSpeed;
-    if (!isSprinting && stamina < 10) stamina += 0.0001f;
+    if (!isMoving() && stamina < 10) stamina += 0.0001f;
+    std::cout << stamina << " stamina left. " << speed << " is the current speed.\n";
     while (const std::optional event = window.pollEvent()) {
       if (isSprinting && isMoving()) stamina -= 0.05f;
       if (event->is<sf::Event::Closed>()) window.close();
@@ -26,7 +27,6 @@ int main() {
           speed = normalSpeed;
           stamina = 0;
         }
-        std::cout << stamina << " stamina left. " << speed << " is the current speed.\n";
         if (key -> scancode == sf::Keyboard::Scancode::Escape) window.close();
       }
       else if (event -> is<sf::Event::FocusLost>())
