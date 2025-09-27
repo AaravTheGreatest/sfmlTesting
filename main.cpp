@@ -11,10 +11,11 @@ int main() {
   sf::Sprite sprite(texture);
   sf::Sprite heart(placeholder);
   float normalSpeed = 1.f, sprintSpeed = 5.f, speed = 1.f, stamina = 10.f;
+  bool isSprinting = false;
   while (window.isOpen()) {
-    bool isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift);
+    isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) && (stamina > 2 && !isSprinting);
     // speed = isSprinting ? sprintSpeed : normalSpeed;
-    if (!isMoving() && stamina < 10) stamina += 0.0001f;
+    if (!isMoving() && stamina < 10) stamina += 0.001f;
     std::cout << stamina << " stamina left. " << speed << " is the current speed.\n";
     while (const std::optional event = window.pollEvent()) {
       if (isSprinting && isMoving()) stamina -= 0.05f;
@@ -26,6 +27,7 @@ int main() {
         if (stamina <= 0) {
           speed = normalSpeed;
           stamina = 0;
+          isSprinting = false;
         }
         if (key -> scancode == sf::Keyboard::Scancode::Escape) window.close();
       }
