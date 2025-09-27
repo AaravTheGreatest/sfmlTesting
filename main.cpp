@@ -11,15 +11,15 @@ int main() {
   sf::Sprite sprite(texture);
   sf::Sprite heart(placeholder);
   float normalSpeed = 1.f, sprintSpeed = 5.f, speed = 1.f, stamina = 10.f;
-  bool isSprinting = false;
+  bool isSprinting = false, recharging = false;
   while (window.isOpen()) {
-    isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) && (stamina > 2 && !isSprinting);
+    isSprinting = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LShift) && !recharging;
     // speed = isSprinting ? sprintSpeed : normalSpeed;
-    if (!isMoving() && stamina < 10) stamina += 0.001f;
+    if (!isSprinting && stamina < 10) stamina += 0.000001f;
     std::cout << stamina << " stamina left. " << speed << " is the current speed.\n";
     while (const std::optional event = window.pollEvent()) {
-      if (isSprinting && isMoving()) stamina -= 0.05f;
-      if (event->is<sf::Event::Closed>()) window.close();
+      if (isSprinting && isMoving()) stamina -= 0.03f;
+      if (event -> is<sf::Event::Closed>()) window.close();
       else if (const auto* key = event -> getIf<sf::Event::KeyPressed>()) {
         speed = isSprinting ? sprintSpeed : normalSpeed;
         stamina = (speed == sprintSpeed) ? (stamina - 0.1) : (stamina + 0.1);
@@ -28,7 +28,9 @@ int main() {
           speed = normalSpeed;
           stamina = 0;
           isSprinting = false;
+          recharging = true;
         }
+        if (stamina >= 2) recharging = false;
         if (key -> scancode == sf::Keyboard::Scancode::Escape) window.close();
       }
       else if (event -> is<sf::Event::FocusLost>())

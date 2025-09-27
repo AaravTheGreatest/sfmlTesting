@@ -8,3 +8,7 @@
 ## Building & running  
   ``g++ main.cpp -o main -lsfml-graphics -lsfml-window -lsfml-system && main``  
   Will add a Makefile  
+## Todo  
+  Clean up code (sprinting logic is kinda all over the place & BSd)  
+  Use OpenGL for better rendering  
+  Use more SFML functions for testing
